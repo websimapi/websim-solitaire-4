@@ -120,11 +120,9 @@ export class Drag {
         // Validate draggable cards
         let cardsToMove = [];
         if (pileType === 'tableau') {
-            const firstFaceUpIdx = pile.findIndex(c => c.isFaceUp);
-            if (firstFaceUpIdx === -1) return;
-            if (cardIndex !== pile.length - 1 && cardIndex !== firstFaceUpIdx) return;
-            cardsToMove = cardIndex === firstFaceUpIdx ? pile.slice(firstFaceUpIdx) : pile.slice(cardIndex);
-            if (cardsToMove.length === 0 || !cardsToMove[0].isFaceUp || !this.game.isValidTableauSequence(cardsToMove)) return;
+            if (!pile[cardIndex] || !pile[cardIndex].isFaceUp) return;
+            cardsToMove = pile.slice(cardIndex);
+            if (cardsToMove.length === 0 || !this.game.isValidTableauSequence(cardsToMove)) return;
         } else if ((pileType === 'waste' || pileType === 'foundation') && cardIndex === pile.length - 1) {
             cardsToMove = [pile[pile.length - 1]];
         } else {
