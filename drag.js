@@ -78,7 +78,7 @@ export class Drag {
     onCardDblClick(e, cardElement) {
         e.stopPropagation(); // prevent game container dblclick
         const cardId = cardElement.dataset.id;
-        const { card } = this.game.getCardAndPile(cardId);
+        const { card, pile, pileName, cardIndex } = this.game.getCardAndPile(cardId);
         const tableauTargets = Array.from({ length: 7 }, (_, i) => `tableau-${i}`)
             .filter(name => this.game.isValidMove(card, [cardId], name));
         let chosen = null;
@@ -94,7 +94,13 @@ export class Drag {
             }, null)?.name;
         }
         const target = chosen || this.game.findAutoMoveTarget(cardId, 'foundation');
-        if (target && this.game.moveCards([cardId], target)) {
+        if (!target) { this.sound.play('invalid'); return; }
+        const [tType] = target.split('-');
+        const [pType] = pileName.split('-');
+        const moveIds = (tType === 'tableau' && pType === 'tableau')
+            ? (this.game.isValidTableauSequence(pile.slice(cardIndex)) ? pile.slice(cardIndex).map(c => c.id) : [cardId])
+            : [cardId];
+        if (this.game.moveCards(moveIds, target)) {
             this.sound.play('place');
         } else {
             this.sound.play('invalid');
