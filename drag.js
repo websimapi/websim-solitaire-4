@@ -116,25 +116,25 @@ export class Drag {
         if (!pile || pile.length === 0) return;
 
         const [pileType] = pileName.split('-');
-
+        
         // Validate draggable cards
+        let cardsToMove = [];
         if (pileType === 'tableau') {
             const firstFaceUpIdx = pile.findIndex(c => c.isFaceUp);
             if (firstFaceUpIdx === -1) return;
             if (cardIndex !== pile.length - 1 && cardIndex !== firstFaceUpIdx) return;
-            const cardsToMove = cardIndex === firstFaceUpIdx ? pile.slice(firstFaceUpIdx) : pile.slice(cardIndex);
+            cardsToMove = cardIndex === firstFaceUpIdx ? pile.slice(firstFaceUpIdx) : pile.slice(cardIndex);
             if (cardsToMove.length === 0 || !cardsToMove[0].isFaceUp || !this.game.isValidTableauSequence(cardsToMove)) return;
-            this.draggedCards = cardsToMove;
         } else if ((pileType === 'waste' || pileType === 'foundation') && cardIndex === pile.length - 1) {
-            this.draggedCards = [pile[pile.length - 1]];
+            cardsToMove = [pile[pile.length - 1]];
         } else {
             return;
         }
-
+        
         // Reset drag state
         this.isDragging = false;
         this.dragStarted = false;
-
+        
         this.startPile = pileName;
         this.draggedCards = cardsToMove;
         this.draggedElements = this.draggedCards.map(c => document.querySelector(`[data-id="${c.id}"]`));
